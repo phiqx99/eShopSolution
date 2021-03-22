@@ -86,6 +86,7 @@ namespace eShopSolution.Application.Catalog.Products
                     });
                 }
             }
+
             var product = new Product()
             {
                 Price = request.Price,
@@ -95,10 +96,12 @@ namespace eShopSolution.Application.Catalog.Products
                 DateCreated = DateTime.Now,
                 ProductTranslations = translation
             };
-            //Save image
-            if (request.ThumbnailImage != null)
+            try
             {
-                product.ProductImages = new List<ProductImage>()
+                //Save image
+                if (request.ThumbnailImage != null)
+                {
+                    product.ProductImages = new List<ProductImage>()
                 {
                     new ProductImage()
                     {
@@ -110,10 +113,13 @@ namespace eShopSolution.Application.Catalog.Products
                         SortOrder = 1
                     }
                 };
+                }
+                _context.Products.Add(product);
+                await _context.SaveChangesAsync();
             }
-            _context.Products.Add(product);
-            try { await _context.SaveChangesAsync(); }
-            catch { }
+            catch (Exception e)
+            {
+            }
             return product.Id;
         }
 
